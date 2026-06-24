@@ -1,0 +1,17 @@
+services:
+  mcp-server:
+    build: .
+    container_name: clickhouse-trace-mcp
+    # Always restart (on crash, on reboot, on Docker daemon start) until you
+    # explicitly run `docker compose down` / `docker stop`.
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3003}:3003"
+    environment:
+      PORT: 3003
+      HOST: 0.0.0.0
+    # All ClickHouse connection + schema settings come from .env.
+    # Defaults live in src/config.ts, so the server still boots without a .env.
+    env_file:
+      - path: .env
+        required: false

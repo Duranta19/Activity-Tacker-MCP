@@ -68,13 +68,58 @@ Point your client at the Streamable HTTP endpoint:
 http://localhost:3003/mcp
 ```
 
-For Claude Code:
+### JSON config (recommended)
+
+Most MCP clients use a JSON config file. Add this `trace-activity` entry under
+`mcpServers`:
+
+```json
+{
+  "mcpServers": {
+    "trace-activity": {
+      "type": "http",
+      "url": "http://localhost:3003/mcp"
+    }
+  }
+}
+```
+
+Where to put it:
+
+| Client | Scope | File |
+|--------|-------|------|
+| Claude Code | This project | `.mcp.json` (project root) |
+| Claude Code | All projects (user) | `~/.claude.json` (top-level `mcpServers` key) |
+| Claude Desktop | User | `claude_desktop_config.json` |
+| Gemini / other | User | e.g. `~/.gemini/config/mcp_config.json` |
+
+After editing, reload/restart the client. In Claude Code, run `/mcp` to confirm
+`trace-activity` shows **connected** with its 5 tools.
+
+> Some clients use `"transport": "streamable-http"` instead of `"type": "http"`.
+> If `type` isn't recognized, try that key.
+
+### CLI alternative (Claude Code)
 
 ```bash
 claude mcp add --transport http trace-activity http://localhost:3003/mcp
+# or for all projects:
+claude mcp add --scope user --transport http trace-activity http://localhost:3003/mcp
 ```
 
-For Claude Desktop, add an HTTP MCP server entry with that URL in its config.
+### Skip the per-call permission prompt (optional)
+
+To let the tools run without prompting each time, add to your Claude Code
+settings (`.claude/settings.json` for this project, or `~/.claude/settings.json`
+for all projects):
+
+```json
+{
+  "permissions": {
+    "allow": ["mcp__trace-activity__*"]
+  }
+}
+```
 
 ## Local development (without Docker)
 
